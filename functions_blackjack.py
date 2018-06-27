@@ -5,63 +5,52 @@ from modules_blackjack import *
 from colorama import Fore, Back, Style, init
 init(autoreset = True)
 
-def main(debug):
-    '''
-    this is main() and where the blackjack game is started.
+def main():
 
-    while game_in_play will call play_blackjack(debug, player_objects_list, dealer, deck)
+    # this is main() and where the blackjack game is started.
+    #
+    # while game_in_play will call play_blackjack(player_objects_list, dealer, deck)
+    #
+    # play_blackjack(player_objects_list, dealer, deck)
+    # - cards dealt
+    # - bets placed
+    # - Hits and Stays
+    # - BlackJack, BUST, Win, Draw, Lose are determined
+    #
+    # Players are given option to play again and will return result of play_again to main()
 
-    play_blackjack(debug, player_objects_list, dealer, deck)
-    - cards dealt
-    - bets placed
-    - Hits and Stays
-    - BlackJack, BUST, Win, Draw, Lose are determined
-
-    Players are given option to play again and will return result of play_again to main()
-    '''
-
-    if not debug:
-        # clear the screen following by 2 carriage returns
-        for i in range(10):
-            clear_screen()
+    # clear the screen following by 2 carriage returns
+    for i in range(10):
+        clear_screen()
 
     # print the welcome banner
-    welcome_banner(debug)
+    welcome_banner()
 
     # create deck object
     # create the deck
     # shuffle the deck
-    deck = Deck(debug)
+    deck = Deck()
     deck.create_deck()
     deck.shuffle_deck()
 
     # call function create_players() --> will ask how many players and each player's name
     # list player_list will be created and returned player_list = ['x', 'name1', 'name2', 'etc']
-    player_list = create_players(debug)
+    player_list = create_players()
 
     # create_player_objects
     # pass parameter player_list and create_player_objects() will create an object for each player and return a list
     # player_objects_list = ['x', object_for_player1, object_for_player2, etc]
-    player_objects_list = create_player_objects(debug, player_list)
+    player_objects_list = create_player_objects(player_list)
 
     # update player name in player object
     # create each players bank
     # this should be the last time list player_list is used
-    update_player_name(debug, player_list, player_objects_list)
-    start_player_bank(debug, player_objects_list)
-
-    if debug:
-        print("DEBUG: main() just finished creating player_objects_list")
-        print("DEBUG: main() just finished updating player name and bank")
-        print("DEBUG: main() player_objects_list == {}".format(player_objects_list))
-        print_player_name_and_bank(debug, player_objects_list)
+    update_player_name(player_list, player_objects_list)
+    start_player_bank(player_objects_list)
 
     # create dealer object and call dealer.update_name(dealer_name)
-    dealer = Dealer(debug)
+    dealer = Dealer()
     dealer.name = dealer.random_dealer_name()
-
-    if debug:
-        print("DEBUG: main() dealer object == {}".format(dealer))
 
     # assign game_in_play = True
     # this will remain True after the cuurrent hand is played and players choose to play again
@@ -70,30 +59,28 @@ def main(debug):
 
     while game_in_play:
 
-        # call check_player_bank(debug, player_objects_list)
+        # call check_player_bank(player_objects_list)
         #
         # if any player on the player_objects_list has a bank == 0
-        #     check_player_bank will del player_object
         #     player index will be removed from player_objects_list
-        player_objects_list = check_player_bank(debug, player_objects_list)
+        player_objects_list = check_player_bank(player_objects_list)
 
         # check to see if there are any players left on the player_objects_list
         # index0 of the list is 'x' so the list has minimum 1 item
         if len(player_objects_list) == 1:
 
-            if not debug:
-                clear_screen()
+            clear_screen()
 
             print("There are no more players sitting at the table!")
             print('\n')
             break     # main() and the blackjack game will end
 
-        # call continue_to_play = play_blackjack(debug, player_objects_list, dealer, deck)
+        # call continue_to_play = play_blackjack(player_objects_list, dealer, deck)
         #
-        # play_blackjack(debug, player_objects_list, dealer) will return
+        # play_blackjack(player_objects_list, dealer) will return
         # True (continue to play)
         # False (do not continue to play)
-        continue_to_play = play_blackjack(debug, player_objects_list, dealer, deck)
+        continue_to_play = play_blackjack(player_objects_list, dealer, deck)
 
         # assign game_in_play to False if continue_to_play is False
         if not continue_to_play:
@@ -106,31 +93,12 @@ def main(debug):
             
             # do clean up of object attributes to start again
             # function play_again_init()
-            play_again_init(debug, player_objects_list, dealer)
+            play_again_init(player_objects_list, dealer)
 
             # create a brand new deck of cards to start next blackjack game
             # shuffle the deck
             deck.create_deck()
             deck.shuffle_deck()
-
-            if debug:
-                # THIS IS A CHECK ON play_again_init success
-                #
-                # Dealer play_again_init() results
-                # self.hand      = []
-                # self.total     = 0
-                # self.bust      = False
-                # self.blackjack = False
-                # self.facedown  = True
-                print("{}".format(dealer.get_name()))
-                dealer.print_after_init_new_game()
-
-                print('\n')
-
-                for i in range(1, len(player_objects_list)):
-                    player = player_objects_list[i]
-                    print("{}".format(player.get_name()))
-                    player.print_after_init_new_game()
 
     # the table is no longer playing blackjack
     #
@@ -138,7 +106,7 @@ def main(debug):
     # all players have bank == 0
     #
     # game is terminated
-    thank_you_for_playing_banner(debug)
+    thank_you_for_playing_banner()
 
 # **** End of function main() **** #
 
@@ -152,63 +120,60 @@ def clear_screen():
 # **** End of function clear_screen() **** #
 
 
-def welcome_banner(debug):
+def welcome_banner():
 
     first_string = ("Welcome to the game of BlackJack!")
     second_string = ("There are 7 seats at the table. Please have a seat!")
 
-    banner_object = assign_banner_attributes(debug, first_string, second_string)
+    banner_object = assign_banner_attributes(first_string, second_string)
 
     # call display_banner
-    display_banner(debug, banner_object)
-    del banner_object
+    display_banner(banner_object)
 
 # **** End of function welcome_banner() **** #
 
-def lets_play_blackjack_banner(debug):
+
+def lets_play_blackjack_banner():
 
     first_string = ("Let's Play BlackJack!")
     second_string = ("Place Your Bets!")
 
-    banner_object = assign_banner_attributes(debug, first_string, second_string)
+    banner_object = assign_banner_attributes(first_string, second_string)
 
     # call display_banner
-    display_banner(debug, banner_object)
-    del banner_object
+    display_banner(banner_object)
 
 # **** End of function lets_play_blackjack_banner() **** #
 
 
-def thank_you_for_playing_banner(debug):
+def thank_you_for_playing_banner():
 
     first_string = ("The Game is Over!")
     second_string = ("Thank You for playing BlackJack!")
 
-    banner_object = assign_banner_attributes(debug, first_string, second_string)
+    banner_object = assign_banner_attributes(first_string, second_string)
 
     # call display_banner
-    display_banner(debug, banner_object)
-    del banner_object
+    display_banner(banner_object)
 
 # **** End of function thank_you_for_playing_banner() **** #
 
 
-def player_removed_from_table_banner(debug, name, bank):
+def player_removed_from_table_banner(name, bank):
 
     # variable 'name' format is 'Player: <name>'.  slice off the first 8 chars
     first_string = ("{}'s Bank = $0.00. {} is being removed from the table".format(name[8:], name[8:]))
     second_string = ("Thank You for playing BlackJack {}!".format(name[8:]))
 
-    banner_object = assign_banner_attributes(debug, first_string, second_string)
+    banner_object = assign_banner_attributes(first_string, second_string)
     
     # call display_banner
-    display_banner(debug, banner_object)
-    del banner_object
+    display_banner(banner_object)
 
 # **** End of function player_removed_from_table_banner() **** #
 
 
-def assign_banner_attributes(debug, *args):
+def assign_banner_attributes(*args):
 
     # assign string(s) passed in as args to string_list
     string_list = []
@@ -217,15 +182,15 @@ def assign_banner_attributes(debug, *args):
         string_list.append(arg)
 
     # generate a blackjack hand to display in this banner
-    hand_list = generate_blackjack_hand_for_banners(debug)
-    cards = convert_hand_to_playing_cards(debug, hand_list)
+    hand_list = generate_blackjack_hand_for_banners()
+    cards = convert_hand_to_playing_cards(hand_list)
 
-    # create banner_obect and pass in debug, cards, string_list
+    # create banner_obect and pass in cards, string_list
     # 1. create first and last row in banner_object
     # 2. create blank space row in banner_object
     # 3. create string list row in banner_object
     # 4. create cards list row in banner_object
-    banner_object = Banner(debug, cards, string_list)
+    banner_object = Banner(cards, string_list)
     banner_object.create_first_and_last_row()
     banner_object.create_blank_space_row()
     banner_object.create_string_list()
@@ -236,7 +201,7 @@ def assign_banner_attributes(debug, *args):
 # **** End of function assign_banner_attributes() **** #
 
 
-def generate_blackjack_hand_for_banners(debug):
+def generate_blackjack_hand_for_banners():
 
     # this is going to create every combination of a winning blackjack hand
     # a blackjack hand will be displayed in the banner
@@ -264,7 +229,7 @@ def generate_blackjack_hand_for_banners(debug):
 # **** End of function generate_blackjack_hand_for_banners() **** #
 
 
-def display_banner(debug, banner):
+def display_banner(banner):
 
     ####################################################
     #
@@ -294,7 +259,7 @@ def display_banner(debug, banner):
 # **** End of display_banner() **** #
 
 
-def create_players(debug):
+def create_players():
 
     # assign is_int to False for while loop
     is_int = False
@@ -350,7 +315,7 @@ def create_players(debug):
             else:
                 valid_name = True
         
-        player_list.append('Player: ' + name)
+        player_list.append('Player: ' + name.title())
 
     # all names for players in backjack are given
     # carriage return needed
@@ -361,7 +326,7 @@ def create_players(debug):
 # **** End of function create_players() **** #
 
 
-def create_player_objects(debug, player_list):
+def create_player_objects(player_list):
 
     # create the player_objects_list and assign index 0 to 'x'
     player_objects_list = ['x']
@@ -370,7 +335,7 @@ def create_player_objects(debug, player_list):
     # player_list = ['x', 'player1_name', 'player2_name', 'player3_name', etc]
     # when creating player object the name of the player (from player_list) is passed to Player
     for i in range(1, len(player_list)):
-        player = Player(debug)
+        player = Player()
         player_objects_list.append(player)
 
     return player_objects_list
@@ -378,7 +343,7 @@ def create_player_objects(debug, player_list):
 # **** End of function create_player_objects() **** #
 
 
-def update_player_name(debug, player_list, player_objects_list):
+def update_player_name(player_list, player_objects_list):
 
     # iterate through each item of player_objects_list ['x', player_object_1, player_object_2, etc]
     # call player.update_player_name(player_list[i]) to update player_name in player object
@@ -391,7 +356,7 @@ def update_player_name(debug, player_list, player_objects_list):
 # **** End of function update_player_name() **** #
 
 
-def start_player_bank(debug, player_objects_list):
+def start_player_bank(player_objects_list):
 
     # ask for the bank for each player
     for i in range(1, len(player_objects_list)):
@@ -406,6 +371,7 @@ def start_player_bank(debug, player_objects_list):
             try:
                 amount = int(input("{:20s}: how much money are you playing BlackJack with?  $".format(player.get_name())))
 
+                # minimum bank is 10
                 if amount < 10:
                     print('\n')
                     print('The minimum Bank Amount is $10.00. Enter a Bank Amount of $10.00 or more!')
@@ -428,13 +394,12 @@ def start_player_bank(debug, player_objects_list):
 # **** End of function create_player_bank() **** #
 
 
-def check_player_bank(debug, player_objects_list):
-    '''
-    check_player_bank() will determine if player's bank == 0
+def check_player_bank(player_objects_list):
 
-    if player's bank == 0 the player's player_object will be removed from player_objects_list
-    '''
-
+    # check_player_bank() will determine if player's bank == 0
+    #
+    # if player's bank == 0 the player's player_object will be removed from player_objects_list
+    #
     # assign original_length to len(player_objects_list)
     # original_length will help determine if player objects have been removed from player_objects_list
     #
@@ -445,8 +410,7 @@ def check_player_bank(debug, player_objects_list):
     # check to be sure each player on player_objects_list has a bank != 0
     # if player bank == 0
     #     pop player index off the player_objects_list
-    #     del player_object
-
+    #
     # pop_list will be used to store the indexes of players on player_objects_list which have a bank == 0
     # pop_list will be used later in this function to pop players off player_objects_list
     pop_list = []
@@ -455,17 +419,15 @@ def check_player_bank(debug, player_objects_list):
 
         player = player_objects_list[i]
 
+        # if player's bank is 0 the player is removed from the table
         if player.get_bank() == 0:
             index = i
 
             # call player_removed_from_table_banner() to announce player is being removed from game
-            player_removed_from_table_banner(debug, player.get_name(), player.get_bank())
+            player_removed_from_table_banner(player.get_name(), player.get_bank())
 
             # append index to pop_list. pop_list will be used in the while loop
             pop_list.append(index)
-
-            # del player object
-            del player
 
     # pop the players off player_objects_list until all items on pop_list are taken care of
     while len(pop_list) != 0:
@@ -490,23 +452,7 @@ def check_player_bank(debug, player_objects_list):
 # **** End of function check_player_bank() **** #
 
 
-def print_player_name_and_bank(debug, player_objects_list):
-
-    # this function will be called if debug = True from main()
-    print('DEBUG: print_player_name_and_bank() printing')
-
-    # this function is used for debugging to ensure player object name and bank are updated properly and accessible
-    for i in range(1, len(player_objects_list)):
-        x = str(i)
-        player = player_objects_list[i]
-        name = player.get_name()
-        bank = player.get_bank()
-        print("DEBUG: Player{}: name == {} and bank == {}".format(x,name,bank))
-
-# **** End of function get_player_name_and_bank() **** #
-
-
-def place_bets(debug, player_objects_list):
+def place_bets(player_objects_list):
 
     # get player name and bank
     # ask player to place bet and check if bank >= bet
@@ -523,14 +469,19 @@ def place_bets(debug, player_objects_list):
             except:
                 print("{} you did not enter a valid number for your bet. Try again!".format(player.get_name()[8:]))
             else:
+                # bet must be <= player's bank to be a valid bet
                 if bet <= player.get_bank() and bet > 0:
                     bet_valid = True
+
+                # check to make sure player is not betting more than what is in player's bank
                 elif bet > player.get_bank():
                     print('\n')
                     print("{} your bet exceeds your bank amount. Your bank amount is ${:.2f}".format(player.get_name()[8:], \
                                                                                                      player.get_bank()))
                     print("Try again!")
                     print('\n')
+
+                # make sure bet is not 0
                 elif bet <= 0:
                     print('\n')
                     print("{} your bet needs to be greater than $0.00. Your bank amount is ${:.2f}".format(player.get_name()[8:], \
@@ -549,7 +500,7 @@ def place_bets(debug, player_objects_list):
 # **** End of function place_bet() **** #
 
 
-def play_blackjack(debug, player_objects_list, dealer, deck):
+def play_blackjack(player_objects_list, dealer, deck):
 
     # This is where the hand of black jack is played
     #
@@ -560,10 +511,8 @@ def play_blackjack(debug, player_objects_list, dealer, deck):
     # 4. each player is dealt 2nd card face-up
     # 5. dealer is dealt 2nd card face-up
 
-    if not debug:
-        clear_screen()
-
-    lets_play_blackjack_banner(debug)
+    clear_screen()
+    lets_play_blackjack_banner()
 
     ###########################################################################
     #
@@ -572,15 +521,9 @@ def play_blackjack(debug, player_objects_list, dealer, deck):
     ###########################################################################
 
     # call place_bets so each player can place their bet before cards are dealt
-    place_bets(debug, player_objects_list)
+    place_bets(player_objects_list)
 
-    if not debug:
-        time.sleep(1)
-
-    if debug:
-        print("DEBUG: play_blackjack() calling print_player_name_and_bank(debug, player_objects_list) ")
-        print("DEBUG: play_blackjack() will verify if all bets were placed and banks updated properly")
-        print_player_name_and_bank(debug, player_objects_list)
+    time.sleep(1)
 
     ###########################################################################
     #
@@ -589,7 +532,7 @@ def play_blackjack(debug, player_objects_list, dealer, deck):
     ###########################################################################
 
     # deal 2 cards to players and 2 cards to dealer
-    deal_first_two_cards(debug, player_objects_list, dealer, deck)
+    deal_first_two_cards(player_objects_list, dealer, deck)
 
     ###########################################################################
     #
@@ -597,10 +540,10 @@ def play_blackjack(debug, player_objects_list, dealer, deck):
     #
     ###########################################################################
 
-    # call update_hand_status(debug, player_objects_list, dealer)
+    # call update_hand_status(player_objects_list, dealer)
     # update_hand_status will check if player has blackjack
     # if no blackjack update_hand_status() will calculate total points in the player's hand
-    update_hand_status(debug, player_objects_list, dealer)
+    update_hand_status(player_objects_list, dealer)
 
     ###########################################################################
     #
@@ -608,15 +551,13 @@ def play_blackjack(debug, player_objects_list, dealer, deck):
     #
     ###########################################################################
 
-
-    if not debug:
-        # clear_screen for screen formatting
-        clear_screen()
+    # clear_screen for screen formatting
+    clear_screen()
 
     print("First Two Cards are Dealt to all Players and Dealer!")
     print('\n')
     
-    display_hand(debug, dealer)    # pass debug and dealer object to display_hand()
+    display_hand(dealer)    # pass dealer object to display_hand()
 
     # call player_hand = player.get_display_hand
     # player.get_display_hand will return a list in the following format
@@ -624,7 +565,7 @@ def play_blackjack(debug, player_objects_list, dealer, deck):
     for i in range(1, len(player_objects_list)):
         player = player_objects_list[i]
 
-        display_hand(debug, player)    # pass debug and player object to display_hand()
+        display_hand(player)    # pass player object to display_hand()
 
     # just return from display_hand
     input("Press Enter to continue..... ")
@@ -635,48 +576,49 @@ def play_blackjack(debug, player_objects_list, dealer, deck):
     #
     ###########################################################################
 
-    if not debug:
-        # clear screen for screen formatting
-        for i in range(10):
-            clear_screen()
+    # clear screen for screen formatting
+    for i in range(10):
+        clear_screen()
 
     # it is time for each player to decide whether to hit or stay
     for i in range(1, len(player_objects_list)):
 
         player = player_objects_list[i]
-        player_hit_or_stay(debug, deck, player, dealer)
+        player_hit_or_stay(deck, player, dealer)
 
     ###########################################################################
     #
     #  6.      DEALER HIT OR STAY
     #
     ###########################################################################
-
-    dealer_hit_or_stay(debug, deck, player_objects_list, dealer)
+    dealer_hit_or_stay(deck, player_objects_list, dealer)
 
     ###########################################################################
     #
     #  7.      WIN, LOSE or DRAW
+    #          - determine if each player has a Win, Lose or Draw
     #
     ###########################################################################
-
-    win_lose_or_draw(debug,player_objects_list, dealer)
+    win_lose_or_draw(player_objects_list, dealer)
 
     ###########################################################################
     #
     #  8.      SETTLE_WINS_DRAWS_LOSE
+    #          - reward winners
+    #          - return bet for Draw
+    #          - keep bet for Lose
     #
     ###########################################################################
-
-    settle_wins_draws_lose(debug,player_objects_list)
+    settle_wins_draws_lose(player_objects_list)
 
     ###########################################################################
     #
     #  9.      UPDATE FINAL RESULT
+    #          - update dealer and players Win, Lose, Draw, BUST, BlackJack
+    #            in player objects and dealer object
     #
     ###########################################################################
-
-    update_final_result(debug, player_objects_list, dealer)
+    update_final_result(player_objects_list, dealer)
 
     ###########################################################################
     #
@@ -684,21 +626,20 @@ def play_blackjack(debug, player_objects_list, dealer, deck):
     #
     ###########################################################################
 
-    if not debug:
-        # clear screen for screen formatting
-        for i in range(10):
-            clear_screen()
+    # clear screen for screen formatting
+    for i in range(10):
+        clear_screen()
 
     print("Final Results of Game are...............")
     print('\n')
 
-    display_hand(debug, dealer)    # pass debug and dealer object to display_hand()
+    display_hand(dealer)    # pass dealer object to display_hand()
 
     for i in range(1, len(player_objects_list)):
         # get the player --> name, total, hand, bust, blackjack, final
         player = player_objects_list[i]
 
-        display_hand(debug, player)    # pass debug and dealer object to display_hand()
+        display_hand(player)    # pass ddealer object to display_hand()
 
     # just return from display_hand
     input("Game is Over. To view Final player summary, Press Enter to continue..... ")
@@ -709,12 +650,11 @@ def play_blackjack(debug, player_objects_list, dealer, deck):
     #
     ###########################################################################
 
-    if not debug:
-        # clear screen for screen formatting
-        for i in range(10):
-            clear_screen()
+    # clear screen for screen formatting
+    for i in range(10):
+        clear_screen()
 
-    display_final_summary(debug, player_objects_list, dealer)
+    display_final_summary(player_objects_list, dealer)
 
     ###########################################################################
     #
@@ -729,7 +669,7 @@ def play_blackjack(debug, player_objects_list, dealer, deck):
     #
     # for now return False
     #return False
-    play_again = play_blackjack_again(debug)
+    play_again = play_blackjack_again()
 
     # return to main()
     return play_again
@@ -738,7 +678,7 @@ def play_blackjack(debug, player_objects_list, dealer, deck):
 # **** End of function play_blackjack() **** #
 
 
-def deal_first_two_cards(debug, player_objects_list, dealer, deck):
+def deal_first_two_cards(player_objects_list, dealer, deck):
 
     # How to deal cards in Black Jack
     # 1. each player is dealt 1st card face-up
@@ -755,16 +695,8 @@ def deal_first_two_cards(debug, player_objects_list, dealer, deck):
             player = player_objects_list[i]
             player.hand.append(deck.deal_card())
 
-            if debug:
-                print("DEBUG: deal_cards() {} has {} card".format(player.get_name(), deal_count))
-                print("DEBUG: deal_cards() {}'s hand is {}".format(player.get_name(), player.get_hand()))
-
         # deal dealer a card
         dealer.hand.append(deck.deal_card())
-
-        if debug:
-            print("DEBUG: deal_cards() {} has {} card".format(dealer.get_name(), deal_count))
-            print("DEBUG: deal_cards() {}'s hand is {}".format(dealer.get_name(), dealer.get_hand()))
 
         # increment deal_count to control while loop
         deal_count += 1
@@ -772,15 +704,15 @@ def deal_first_two_cards(debug, player_objects_list, dealer, deck):
 # **** End of function deal_first_two_cards() **** #
 
 
-def update_hand_status(debug, player_objects_list, dealer):
-    '''
-    update_hand_status() will 
+def update_hand_status(player_objects_list, dealer):
 
-    update self.blackjack = True if hand is a blackjack by calling 
-    player or dealer.is_blackjack()
+    # update_hand_status() will 
+    #
+    # update self.blackjack = True if hand is a blackjack by calling 
+    # player or dealer.is_blackjack()
+    #
+    # calculate player or dealer's hand total by calling player or dealer.calculate_hand()
 
-    calculate player or dealer's hand total by calling player or dealer.calculate_hand()
-    '''
 
     for i in range(1, len(player_objects_list)):
         player = player_objects_list[i]
@@ -793,7 +725,7 @@ def update_hand_status(debug, player_objects_list, dealer):
 # **** End of function update_hand_status() **** #
 
 
-def display_hand(debug, player_or_dealer):
+def display_hand(player_or_dealer):
 
     # display the hand
     #
@@ -820,7 +752,7 @@ def display_hand(debug, player_or_dealer):
         total = 'Unknown'
 
     # convert_hand_to_playing_cards() will convert hand list to playing cards
-    playing_card_hand = convert_hand_to_playing_cards(debug, hand)
+    playing_card_hand = convert_hand_to_playing_cards(hand)
 
 
     print("**********************************************************************************************************")
@@ -861,9 +793,9 @@ def display_hand(debug, player_or_dealer):
 # **** End of function display_hand() **** #
 
 
-def convert_hand_to_playing_cards(debug, hand_list):
+def convert_hand_to_playing_cards(hand_list):
 
-    def card_color(debug, suite, value):
+    def card_color(suite, value):
 
         #   HEART   = "\u2665"
         #   DIAMOND = "\u2666"
@@ -877,21 +809,22 @@ def convert_hand_to_playing_cards(debug, hand_list):
 
         if suite == 'Hearts':
             suite = HEART
-            #value = (Fore.RED + Style.BRIGHT + value + Style.RESET_ALL)
+
         elif suite == 'Diamonds':
             suite = DIAMOND
-            #value = (Fore.RED + Style.BRIGHT + value + Style.RESET_ALL)
+ 
         elif suite == 'Clubs':
             suite = CLUB
+
         elif suite == 'Spades':
             suite = SPADE
         
         return(suite, value)
 
-        # **** End of function card_color() **** #
+    # **** End of function card_color() **** #
 
 
-    def build_playing_card(debug, card):
+    def build_playing_card(card):
 
         #
         #                                value != 'facedown'
@@ -966,11 +899,11 @@ def convert_hand_to_playing_cards(debug, hand_list):
             value = card[1]
 
         # card_color returns a tuple (value,suite)
-        card = card_color(debug,suite,value)
+        card = card_color(suite, value)
 
         # build_playing_card() returns a tuple (row1,row2,row3,row4,row5,row6,row7,row8,row9)
         # row1-9 are the nine rows of the playing card
-        playing_card_rows = build_playing_card(debug,card)
+        playing_card_rows = build_playing_card(card)
 
         if len(new_hand) == 0:
 
@@ -996,20 +929,18 @@ def convert_hand_to_playing_cards(debug, hand_list):
 # **** End of function convert_hand_to_playing_cards() **** #
 
 
-def player_hit_or_stay(debug, deck, player, dealer):
+def player_hit_or_stay(deck, player, dealer):
 
-    '''
-    def player_hit_or_stay will prompt player to decie whether to hit or stay.
-
-    if player decides to hit a card will be given to player
-    - player's hand will be updated with new card
-    - hand total will be calculated
-    - if player bust then player.self bust will be assigned True
-
-    if player decides to stay
-    - player is satisfied with current total
-    - if player has blackjack with 1st two cards the player will automatically stay
-    '''
+    # def player_hit_or_stay will prompt player to decie whether to hit or stay.
+    #
+    # if player decides to hit a card will be given to player
+    # - player's hand will be updated with new card
+    # - hand total will be calculated
+    # - if player bust then player.self bust will be assigned True
+    #
+    # if player decides to stay
+    # - player is satisfied with current total
+    # - if player has blackjack with 1st two cards the player will automatically stay
 
     print("{}'s turn to Hit or Stay ..................".format(player.get_name()))
     print('\n')
@@ -1024,38 +955,31 @@ def player_hit_or_stay(debug, deck, player, dealer):
         #  1.      DISPLAY DEALER'S HAND and DISPLAY PLAYER'S HAND
         #
         ######################################################################
-
-        display_hand(debug, dealer)  # pass debug and dealer object to display_hand()
-        display_hand(debug, player)  # pass debug and player object to display_hand()
+        display_hand(dealer)  # pass dealer object to display_hand()
+        display_hand(player)  # pass player object to display_hand()
 
         ######################################################################
         #
         #  2.      ASK PLAYER TO HIT or STAY
         #
         ######################################################################
-
         answer_valid = False
 
         while not answer_valid:
 
             answer = input("{} do you want to Hit or Stay? 'h' or 's' ".format(player.get_name()))
 
-            if not debug:
-                # clear_screen for screen formatting
-                for i in range(10):
-                    clear_screen()
-
-            if debug:
-                print("DEBUG: player_hit_or_stay() do you want to Hit or Stay?")
-                print("DEBUG: player_hit_or_stay() answer == {}".format(answer))
+            # clear_screen for screen formatting
+            for i in range(10):
+                clear_screen()
 
             if answer.upper() != 'H' and answer.upper() != 'S':
 
                 print("{} you did not enter a 'h' or 's'. Please Try again!".format(player.get_name()))
                 print('\n')
 
-                display_hand(debug, dealer)  # pass debug and dealer object to display_hand()
-                display_hand(debug, player)  # pass debug and player object to display_hand()
+                display_hand(dealer)  # pass dealer object to display_hand()
+                display_hand(player)  # pass player object to display_hand()
 
             else:
                 answer_valid = True
@@ -1069,7 +993,6 @@ def player_hit_or_stay(debug, deck, player, dealer):
         #                         while not stop_taking_hits: will terminate
         #
         ######################################################################
-
         if answer.upper() == 'S':
             stop_taking_hits = True
 
@@ -1081,21 +1004,20 @@ def player_hit_or_stay(debug, deck, player, dealer):
             player.calculate_hand()
 
     if player.get_blackjack() or player.get_bust():
-        display_hand(debug, dealer)   # pass debug and dealer object to display_hand()
-        display_hand(debug, player)   # pass debug and player object to display_hand()
+        display_hand(dealer)   # pass dealer object to display_hand()
+        display_hand(player)   # pass player object to display_hand()
 
         # just return from display_hand
         input("Press Enter to continue..... ")
 
-        if not debug:
-            # clear screen for screen formatting
-            for i in range(10):
-                clear_screen()
+        # clear screen for screen formatting
+        for i in range(10):
+            clear_screen()
 
 # **** End of function player_hit_or_stay() **** #
 
 
-def dealer_hit_or_stay(debug, deck, player_objects_list, dealer):
+def dealer_hit_or_stay(deck, player_objects_list, dealer):
 
     ##################################################################################
     #
@@ -1140,35 +1062,18 @@ def dealer_hit_or_stay(debug, deck, player_objects_list, dealer):
         #  1.      DISPLAY DEALER'S HAND and DISPLAY PLAYER'S HAND
         #
         ######################################################################
-
-        if debug:
-            print("DEBUG: dealer_hit_or_stay() 1st display_hand being called for dealer")
-
-        display_hand(debug, dealer)   # pass debug and dealer object to display_hand()
-
-        if debug:
-            print("DEBUG: dealer_hit_or_stay() 1st display_hand returned for dealer")
-
+        display_hand(dealer)   # pass dealer object to display_hand()
 
         for i in range(1,len(player_objects_list)):
-
             player = player_objects_list[i]
-
-            if debug:
-                print("DEBUG: dealer_hit_or_stay() 2nd display_hand being called for player")
-
-            display_hand(debug, player)    # pass debug and player object to display_hand()
-
-            if debug:
-                print("DEBUG: dealer_hit_or_stay() 2nd display_hand returned for player")
+            display_hand(player)    # pass player object to display_hand()
 
         # just return from display_hand
         input("Press Enter to see if Dealer Hits or Stays ")
 
-        if not debug:
-            # clear_screen for screen formatting
-            for i in range(10):
-                clear_screen()
+        # clear_screen for screen formatting
+        for i in range(10):
+            clear_screen()
 
         ######################################################################
         #
@@ -1212,23 +1117,13 @@ def dealer_hit_or_stay(debug, deck, player_objects_list, dealer):
     # need extra carriage return before display_hand() is called
     print('\n')
 
-    if debug:
-        print("DEBUG: dealer_hit_or_stay() 3rd display_hand being called for dealer")
-
-    display_hand(debug, dealer)    # pass debug and dealer object to display_hand()
-
-    if debug:
-        print("DEBUG: dealer_hit_or_stay() 3rd display_hand returned for dealer")
+    display_hand(dealer)    # pass dealer object to display_hand()
 
     for i in range(1,len(player_objects_list)):
-
         player = player_objects_list[i]
 
-        if debug:
-            print("DEBUG: dealer_hit_or_stay() 4th display_hand being called for player")
-
         # display_hand for current player
-        display_hand(debug, player)    # pass debug and player object to display_hand()
+        display_hand(player)    # pass player object to display_hand()
 
     # just return from display_hand and dealer hit or stay is done
     input("Press Enter to continue..... ")
@@ -1236,13 +1131,12 @@ def dealer_hit_or_stay(debug, deck, player_objects_list, dealer):
 # **** End of function dealer_hit_or_stay() **** # 
 
 
-def win_lose_or_draw(debug,player_objects_list, dealer):
-    '''
-    win_lose_or_draw() will determine if a player wins, loses or draws by comparing the score 
-    of the player to the dealer.
-
-    player object will be updated with the results.
-    '''
+def win_lose_or_draw(player_objects_list, dealer):
+    
+    # win_lose_or_draw() will determine if a player wins, loses or draws by comparing the score 
+    # of the player to the dealer.
+    #
+    # player object will be updated with the results.
 
     for i in range(1, len(player_objects_list)):
 
@@ -1288,18 +1182,17 @@ def win_lose_or_draw(debug,player_objects_list, dealer):
 # **** End of function win_lose_or_draw() **** #
 
 
-def settle_wins_draws_lose(debug,player_objects_list):
-    '''
-    determine if player wins, draws or lose 
+def settle_wins_draws_lose(player_objects_list):
 
-    player gets paid for the winnings
-    player is returned bet if player end game with a draw
-    player loses bet if lose (bet is already decremented during bet time)
-
-    player.get_win()  will return True or False
-    player.get_draw() will return True or False
-    player.get_lose() will return True or False 
-    '''
+    # determine if player wins, draws or lose 
+    #
+    # player gets paid for the winnings
+    # player is returned bet if player end game with a draw
+    # player loses bet if lose (bet is already decremented during bet time)
+    #
+    # player.get_win()  will return True or False
+    # player.get_draw() will return True or False
+    # player.get_lose() will return True or False 
 
     for i in range(1, len(player_objects_list)):
         player = player_objects_list[i]
@@ -1317,19 +1210,18 @@ def settle_wins_draws_lose(debug,player_objects_list):
 # **** End of function settle_wins_draws_lose() **** #
 
 
-def update_final_result(debug, player_objects_list, dealer):
-    '''
-    udpate_final_result() will call player and dealer.update_final()
+def update_final_result(player_objects_list, dealer):
 
-    update.final() will determine if player and dealer ends the hand with
-    blackjack - player and dealer will be updated respectively (player and dealer)
-    win - if players total > than dealer total and player is not bust (player)
-    draw - if player total == dealer total and player not bust (player)
-    lose - if player total < dealer total (player)
-    final - will be assigned final result
-          - if player wins and has blackjack then final will be assigned blackjack
-          - if player has blackjack and dealer has blackjack then final will be assigned draw
-    '''
+    # udpate_final_result() will call player and dealer.update_final()
+    #
+    # update.final() will determine if player and dealer ends the hand with
+    # blackjack - player and dealer will be updated respectively (player and dealer)
+    # win   - if players total > than dealer total and player is not bust (player)
+    # draw  - if player total == dealer total and player not bust (player)
+    # lose  - if player total < dealer total (player)
+    # final - will be assigned final result
+    #       - if player wins and has blackjack then final will be assigned blackjack
+    #       - if player has blackjack and dealer has blackjack then final will be assigned draw
 
     dealer.update_final()
 
@@ -1340,11 +1232,10 @@ def update_final_result(debug, player_objects_list, dealer):
 # **** End of function update_final_result() **** #
 
 
-def display_final_summary(debug, player_objects_list, dealer):
-    '''
-    display_final_summary will display a summary of hand for all players
-    BLACKJACK, WIN, DRAW, BUST, LOSE will be displayed per player respectivley
-    '''
+def display_final_summary(player_objects_list, dealer):
+
+    # display_final_summary will display a summary of hand for all players
+    # BLACKJACK, WIN, DRAW, BUST, LOSE will be displayed per player respectivley
 
     # print final summary for player
     # dealer name's format is 'Dealer: <name.'.   dealer.get_name()[8:] will slice on the name portion
@@ -1375,7 +1266,7 @@ def display_final_summary(debug, player_objects_list, dealer):
 # **** End of function display_final_summary() **** #
 
 
-def play_blackjack_again(debug):
+def play_blackjack_again():
     '''
     play_blackjack_again() function is to determine if another blackjack game will be played
     '''
@@ -1388,9 +1279,11 @@ def play_blackjack_again(debug):
         if answer.upper() == 'Y' or answer.upper() == 'YES':
             loop_continue = False
             play_again = True
+
         elif answer.upper() == 'N' or answer.upper() == 'NO':
             loop_continue = False
             play_again = False
+
         else:
             print('\n')
             print("You need to answer 'y' or 'n'. Please try again")
@@ -1404,14 +1297,13 @@ def play_blackjack_again(debug):
 # **** End of function play_blackjack_again() **** #
 
 
-def play_again_init(debug, player_objects_list, dealer):
-    '''
-    play_again_init() will call init_new_game() for the dealer and each player
-    for dealer --> dealer.init_new_game()
-    for player --> player.init_new_game()
+def play_again_init(player_objects_list, dealer):
 
-    init_new_game() returns all attributes (except for player's self.bank) to default so the new game can start clean
-    '''
+    # play_again_init() will call init_new_game() for the dealer and each player
+    # for dealer --> dealer.init_new_game()
+    # for player --> player.init_new_game()
+    #
+    # init_new_game() returns all attributes (except for player's self.bank) to default so the new game can start clean
 
     #######################################################################
     #

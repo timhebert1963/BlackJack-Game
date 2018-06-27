@@ -1,13 +1,10 @@
 import random
 
 class Deck():
-    '''
-    class Deck() will be the playing deck for the blackjack game
-    '''
 
-    def __init__(self, debug):
+    # class Deck() will be the playing deck for the blackjack game
 
-        self.debug = debug
+    def __init__(self):
 
         # self.deck defined and is initialized to empty
         deck = []
@@ -73,12 +70,6 @@ class Deck():
         for i in range(13):
         	self.deck.append(hearts[i])
 
-        if self.debug:
-            print("DEBUG: Deck.create_deck() -> Deck created")
-            print("DEBUG: Deck.create_deck() -> Dump self.deck")
-            print(self.deck)
-            input("DEBUG: Deck.create_deck() -> self.deck has dumped. Hit Enter to continue ")
-
     # **** End of Deck.create_deck() **** #
 
 
@@ -94,9 +85,6 @@ class Deck():
         for i in range (10):
             random.shuffle(self.deck)
 
-            if self.debug:
-                print("DEBUG: Deck.shuffle_deck() {}".format(i))
-
     # **** End of Deck.shuffle_deck() **** #
 
 
@@ -104,20 +92,9 @@ class Deck():
         # method will take card from self.deck[0]
         # method will append card to self.hand
         # method will pop the card off of self.deck
-        if len(self.deck) > 0:
-            card = self.deck[0]
-        else:
-            print("Out of Cards: Inside Deck.deal_card() and number of deck cards == {}".format(len(self.deck)))
-            input("You need to terminate the game ")
-
-        if self.debug:
-            print("DEBUG: Deck.deal_card() card == {}".format(card))
-
+        card = self.deck[0]
         self.deck.pop(0)
         self.deck_count = len(self.deck)
-
-        if self.debug:
-            print("DEBUG: Deck.deal_card() self.deck_count == {}".format(self.deck_count))
 
         return card
 
@@ -128,9 +105,7 @@ class Deck():
 
 class Hand():
 
-    def __init__(self, debug):
-
-        self.debug = debug
+    def __init__(self):
 
         self.name = ''
         self.hand = []
@@ -216,12 +191,10 @@ class Hand():
 
 class Dealer(Hand):
 
-    def __init__(self, debug):
-
-        self.debug = debug
+    def __init__(self):
 
     	# call Deck.__init__(self)
-        Hand.__init__(self, self.debug)
+        Hand.__init__(self)
 
         # dealer facedown, hand, cards_total
         # the 1st card of dealer hand is facedown until all players are done taking hits
@@ -245,6 +218,8 @@ class Dealer(Hand):
 
     def init_new_game(self):
 
+        # player's want to play again so assign attributes to default values
+        #
         # initialize following attributes to default
         self.hand      = []
         self.total     = 0
@@ -258,6 +233,7 @@ class Dealer(Hand):
 
     def print_after_init_new_game(self):
 
+        # this is for debugging purposes
         print("Initialized to")
         print("self.hand      = [] ......... Actual {}".format(self.hand))
         print("self.total     = 0  ......... Actual {}".format(self.total))
@@ -272,8 +248,8 @@ class Dealer(Hand):
     def random_dealer_name(self):
 
         # this method will create a random number from 50-100
+        #
         # the random number will be used to shuffle self.list_of_names so the dealer name will be different each hand
-
         num = random.randint(50,101)
         count = 1
 
@@ -303,10 +279,6 @@ class Dealer(Hand):
 
 
     def is_blackjack(self):
-
-        if self.debug:
-            print("DEBUG: Hand.is_blackjack() DUMPING self.hand")
-            print("DEBUG: {}".format(self.hand))
 
         # 1. 1st two cards dealt to each player
         # 2. all players have completed hit or stay
@@ -359,11 +331,6 @@ class Dealer(Hand):
             if (ace_exist) and (self.total + 10 <= 21):
                 self.total += 10
 
-            if self.debug:
-                print("DEBUG: Dealer.calculate_hand() self.total    == {}".format(self.total))
-                print("DEBUG: Dealer.calculate_hand() self.hand     == {}".format(self.hand))
-                print("DEBUG: Dealer.calculate_hand() self.facedown == {}".format(self.facedown))
-
             ################################
             #
             #    check if dealer BUST
@@ -382,12 +349,6 @@ class Dealer(Hand):
     # **** End of Dealer.no_facedown() **** #
 
 
-    def get_facedown(self):
-        return self.facedown
-
-    # **** End of Dealer.get_facedown() **** #
-
-
     def update_final(self):
 
         if self.blackjack:
@@ -403,12 +364,10 @@ class Dealer(Hand):
 
 class Player(Hand):
 
-    def __init__(self, debug):
-
-        self.debug = debug
+    def __init__(self):
 
         # call Hand.__init__(self)
-        Hand.__init__(self, self.debug)
+        Hand.__init__(self)
 
         self.bank = 0
         self.bet  = 0
@@ -439,6 +398,7 @@ class Player(Hand):
 
     def print_after_init_new_game(self):
 
+        # for debug purposes only
         print("Initialized to")
         print("self.hand      = [] ......... Actual {}".format(self.hand))
         print("self.total     = 0  ......... Actual {}".format(self.total))
@@ -454,10 +414,6 @@ class Player(Hand):
 
 
     def is_blackjack(self):
-
-        if self.debug:
-            print("DEBUG: Hand.is_blackjack() DUMPING self.hand")
-            print("DEBUG: {}".format(self.hand))
 
         # 1st two cards dealt and checking for a natural Black Jack for each player
         # 
@@ -624,17 +580,9 @@ class Player(Hand):
 
             for card in self.hand:
 
-                if self.debug:
-                    print("DEBUG: Player.calculate_hand() for card in self.hand")
-                    print("DEBUG: Player.calculate_hand() card    == {}".format(card))
-                    print("DEBUG: Player.calculate_hand() card[2] == {}".format(card[2]))
-
                 if card[1] == 'A':
                     ace_exist = True
                     break
-
-            if self.debug:
-                print("DEBUG: Player.calculate_hand() ace_exist == {}".format(ace_exist))
 
             ##################################################################
             #
@@ -650,21 +598,8 @@ class Player(Hand):
                 value = card[2]
                 self.total += value
 
-            if self.debug:
-                print("DEBUG: Player.calculate_hand() before if ace_exist and 21 <= self.total + 10")
-
             if (ace_exist == True) and (self.total + 10 <= 21):
-                if self.debug:
-                    print("DEBUG: Player.calculate_hand() inside if (ace_exist) and (self.total + 10 <= 21)")
-
                 self.total += 10
-
-                if self.debug:
-                    print("DEBUG: Player.calculate_hand() self.total == {} Ace should be 11".format(self.total))
-
-            if self.debug:
-                print("DEBUG: Player.calculate_hand() self.total    == {}".format(self.total))
-                print("DEBUG: Player.calculate_hand() self.hand     == {}".format(self.hand))
 
             ##################################################################
             #
@@ -693,9 +628,7 @@ class Banner():
     generate_banner()
     '''
 
-    def __init__(self, debug, cards_list, string_list):
-
-        self.debug = debug
+    def __init__(self, cards_list, string_list):
 
         self.row_length         = 77              # length of all banner rows
         self.first_and_last_row = ''              # 1st and last row of banner
